@@ -1,7 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 import { organizationClient } from "better-auth/client/plugins";
+import { AppError } from "./error-handler";
 
-const authClient = createAuthClient({
+export const authClient = createAuthClient({
   plugins:[
     organizationClient()
   ],
@@ -12,6 +13,6 @@ export const signIn = async () => {
     provider:"google",
     callbackURL:"/dashboard"
   })
-  if(data?.error) throw new Error(data.error.message)
+  if(data?.error) throw new AppError(data.error.message || "Something went wrong",401,"UNAUTHORIZED")
   return data
 }

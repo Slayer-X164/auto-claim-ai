@@ -11,10 +11,12 @@
   "dependencies": {
     "better-auth": "^1.6.27",
     "drizzle-orm": "^0.45.2",
+    "js-yaml": "^5.2.3",
     "next": "16.2.12",
     "postgres": "^3.4.9",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
