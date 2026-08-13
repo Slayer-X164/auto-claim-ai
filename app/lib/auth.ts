@@ -1,10 +1,13 @@
 import { betterAuth } from "better-auth";
 import {drizzleAdapter} from "better-auth/adapters/drizzle"
-import {db} from "@/app/db/db"
+import {db} from "@/app/lib/db/db"
 import { organization } from "better-auth/plugins";
 import { role } from "better-auth/plugins/access";
 
 export const auth = betterAuth({
+  database: drizzleAdapter(db,{provider:"pg"}),
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL!,
+  cookiePrefix:"autoclaim",
   plugins:[
     organization({
       teams:{
@@ -22,7 +25,7 @@ export const auth = betterAuth({
       }
     })
   ],
-  database: drizzleAdapter(db,{provider:"pg"}),
+
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
