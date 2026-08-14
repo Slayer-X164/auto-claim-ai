@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { authClient } from "@/app/lib/auth-client";
 import { useUserStore } from "@/app/store/userStore";
+import CenterLoader from "@/component/CenterLoader";
 
 export default function Dashboard() {
   const { data: session, isPending } = authClient.useSession();
@@ -14,11 +15,15 @@ export default function Dashboard() {
     }
   }, [session, setUser]);
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) {
+    return (
+      <CenterLoader text="Setting up your workspace..."/>
+    );
+  }
 
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
 
       {user && (
         <div className="mt-4">

@@ -1,11 +1,14 @@
+"use client";
+
 import Image from "next/image";
-import LoginWithGoogleBtn from "@/component/LoginWithGoogleBtn";
+import LoginWithGoogleBtn from "@/component/buttons/LoginWithGoogleBtn";
+import PrimaryBtn from "@/component/buttons/PrimaryBtn";
 
 export default function LoginPage() {
   return (
     <main className="min-h-screen bg-[#1F66FF] flex items-center justify-center p-4 sm:p-8 font-instrument">
       {/* Desktop/Tablet Container */}
-      <div className="hidden md:flex flex-row w-full max-w-[1000px] h-[651px] bg-white rounded-[30px] overflow-hidden p-[25px] items-center justify-between">
+      <div className="hidden md:flex flex-row shadow-2xl w-full max-w-[1000px] h-[651px] bg-white rounded-[30px] overflow-hidden p-[25px] items-center justify-between">
 
         {/* Left Side (Gradient background) */}
         <div className="relative w-[500px] h-[610px] bg-[rgba(11,88,255,0.08)] rounded-[22px] overflow-hidden p-8 flex flex-col justify-between">
@@ -44,7 +47,7 @@ export default function LoginPage() {
                {/* Form */}
                <div className="flex flex-col gap-[31px]">
                   <div className="flex flex-col gap-[10px]">
-                     <label className="text-[18px] text-black">Enter your email</label>
+                     <label className="text-[18px] text-neutral-400">Enter your email</label>
                      <input
                        type="email"
                        placeholder="abc@gmail.com"
@@ -53,9 +56,7 @@ export default function LoginPage() {
 
                      />
                   </div>
-                  <button className="w-full drop-shadow-[1px_10px_20px_rgba(10,10,10,0.3)] cursor-pointer py-3 bg-black text-white rounded-[7px] text-[16px]">
-                    Get OTP
-                  </button>
+                  <PrimaryBtn text="Get OTP" onClick={() => {console.log("otp: 984343")}} />
                </div>
 
                {/* Divider */}
@@ -118,7 +119,7 @@ export default function LoginPage() {
                {/* Form */}
                <div className="flex flex-col gap-[22px]">
                   <div className="flex flex-col gap-[7px]">
-                     <label className="text-[12px] text-black">enter your email</label>
+                     <label className="text-[12px] text-neutral-400">Enter your email</label>
                      <input
                        type="email"
                        placeholder="abc@gmail.com"
@@ -126,9 +127,7 @@ export default function LoginPage() {
 
                      />
                   </div>
-                  <button className="w-full drop-shadow-[1px_10px_20px_rgba(10,10,10,0.3)] cursor-pointer py-[7px] bg-black text-white rounded-[5px] text-[14px]">
-                    Get OTP
-                  </button>
+                  <PrimaryBtn text="Get OTP" onClick={() => {console.log("otp: 984343")}} />
                </div>
 
                {/* Divider */}

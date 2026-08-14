@@ -10,6 +10,7 @@ export const auth = betterAuth({
   cookiePrefix:"autoclaim",
   plugins:[
     organization({
+      creatorRole:"admin",
       teams:{
         enabled:false,
       },

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0655FF] from-0% to-white to-88% flex flex-col items-center px-4 py-8 font-instrument overflow-x-hidden">
+    <main className="min-h-screen bg-gradient-to-b from-[#0655FF] from-0% to-white to-88% flex flex-col items-center px-4 py-4 font-instrument overflow-x-hidden">
 
       {/* Navigation Bar */}
       <nav className="w-full max-w-[1148px] bg-white rounded-lg px-2 sm:px-[10px] py-[7px] flex flex-row items-center justify-between shadow-sm">
