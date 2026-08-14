@@ -3,6 +3,7 @@ import {drizzleAdapter} from "better-auth/adapters/drizzle"
 import {db} from "@/app/lib/db/db"
 import { organization } from "better-auth/plugins";
 import { role } from "better-auth/plugins/access";
+import { ac, admin, reviewer } from "./auth-permissions";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db,{provider:"pg"}),
@@ -14,15 +15,12 @@ export const auth = betterAuth({
       teams:{
         enabled:false,
       },
+
+      accessControl:ac,
+      
       roles:{
-        admin: role({
-          organization:["update"],
-          member:["create","read","update","delete"],
-          invitation:["create","read","update","delete"]
-        }),
-        reviewer: role({
-          member:["read"],
-        })
+        admin,
+        reviewer
       }
     })
   ],
