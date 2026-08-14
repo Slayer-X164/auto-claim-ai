@@ -3,9 +3,12 @@ import { useEffect } from "react";
 import { authClient } from "@/app/lib/auth-client";
 import { useUserStore } from "@/app/store/userStore";
 import CenterLoader from "@/component/CenterLoader";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const { data: activeMember, isPending: isMemberPending } = authClient.useActiveMember();
   const setUser = useUserStore((state) => state.setUser);
   const user = useUserStore((state) => state.user);
 
@@ -15,7 +18,20 @@ export default function Dashboard() {
     }
   }, [session, setUser]);
 
-  if (isPending) return <CenterLoader text="Setting up your workspace..."/>;
+  useEffect(() => {
+    if (!isSessionPending && !isMemberPending) {
+      // If there is an active member and they are an admin/owner, redirect them
+      if (activeMember && (activeMember.role === "admin" || activeMember.role === "owner")) {
+        router.replace("/dashboard/admin");
+      }
+    }
+  }, [activeMember, isSessionPending, isMemberPending, router]);
+
+  if (isSessionPending || isMemberPending) {
+    return (
+      <CenterLoader text="Loading your workspace..."/>
+    );
+  }
 
   return (
     <main className="p-8">
