@@ -11,7 +11,7 @@ export default function Dashboard() {
   const { data: activeMember, isPending: isMemberPending } = authClient.useActiveMember();
   const setUser = useUserStore((state) => state.setUser);
   const user = useUserStore((state) => state.user);
-
+  const {data:orgs , isPending:isOrgPending} = authClient.useListOrganizations()
   useEffect(() => {
     if (session?.user) {
       setUser(session.user);
@@ -41,7 +41,7 @@ export default function Dashboard() {
         <div className="mt-4">
           <p>Welcome back, {user.name}! lets review some claims</p>
           <p>Email: {user.email}</p>
-
+          <p>Organization: {orgs?.find((org) => org.id === activeMember?.organizationId)?.name}</p>
         </div>
       )}
     </main>

@@ -15,10 +15,10 @@ export const authClient = createAuthClient({
   ],
 });
 
-export const signIn = async () => {
+export const signInWithGoogle = async (callbackURL = "/auth/callback") => {
   const data = await authClient.signIn.social({
     provider: "google",
-    callbackURL: "/onboarding"
+    callbackURL
   })
   if (data?.error) throw new AppError(data.error.message || "Something went wrong", 401, "UNAUTHORIZED")
   return data

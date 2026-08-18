@@ -36,7 +36,7 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
   try {
     const { data, error } =
       await authClient.organization.inviteMember({
-        email: memberEmail.trim(),
+        email: memberEmail,
         role: "reviewer",
         organizationId: org?.id
       });

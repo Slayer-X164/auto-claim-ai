@@ -30,10 +30,10 @@ export default function OnboardingPage() {
         slug,
       })
 
-    if (error) {
-      console.error("Error creating organization:", error);
-      throw new AppError("Error creating organization",400)
-    }
+      if (error) {
+        console.error("Error creating organization:", error);
+        throw new AppError("Error creating organization", 400)
+      }
 
       await authClient.organization.setActive({
         organizationId: data?.id

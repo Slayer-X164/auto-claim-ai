@@ -1,10 +1,19 @@
 "use client"
-import { signIn } from "@/app/lib/auth-client"
+import { signInWithGoogle } from "@/app/lib/auth-client"
 import Image from "next/image"
+import { usePathname, useParams } from "next/navigation"
 
 export default function LoginWithGoogleBtn({ isMobile = false }: { isMobile?: boolean }) {
+    const pathname = usePathname()
+    const params = useParams()
+
     const handleLogin = async () => {
-        await signIn()
+        if (pathname?.includes("/accept-invitation/")) {
+            const invitationId = params?.invitationId
+            await signInWithGoogle(`/auth/invitation-callback?invitationId=${invitationId}`)
+        } else {
+            await signInWithGoogle()
+        }
     }
 
     return(
