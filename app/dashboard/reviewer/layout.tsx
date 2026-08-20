@@ -9,7 +9,7 @@ export default function AdminDashboardLayout({
 }) {
   return (
     <div className="flex h-screen w-full bg-neutral-100 overflow-hidden">
-      <Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
         <Sidebar />
       </Suspense>
       <div className="flex flex-col flex-1 overflow-hidden m-4 rounded-xl bg-white border-3 border-neutral-200/80">
