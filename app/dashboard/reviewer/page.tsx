@@ -1,17 +1,22 @@
 "use client"
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { authClient } from "@/app/lib/auth-client";
 import { useUserStore } from "@/app/store/userStore";
 import CenterLoader from "@/component/CenterLoader";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import ClaimsList from "@/component/dashboard/reviewer/ClaimsList";
+import Settings from "@/component/dashboard/reviewer/Settings";
+import ReviewerDashboard from "@/component/dashboard/reviewer/ReviewerDashboard";
 
 export default function Dashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") || "dashboard";
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const { data: activeMember, isPending: isMemberPending } = authClient.useActiveMember();
   const setUser = useUserStore((state) => state.setUser);
   const user = useUserStore((state) => state.user);
-  const {data:orgs , isPending:isOrgPending} = authClient.useListOrganizations()
+  const { data: orgs, isPending: isOrgPending } = authClient.useListOrganizations();
   useEffect(() => {
     if (session?.user) {
       setUser(session.user);
@@ -28,22 +33,25 @@ export default function Dashboard() {
   }, [activeMember, isSessionPending, isMemberPending, router]);
 
   if (isSessionPending || isMemberPending) {
+    return <CenterLoader text="Loading your workspace..." />;
+  }
+
+  if (tab === "claims") {
     return (
-      <CenterLoader text="Loading your workspace..."/>
+      <Suspense fallback={<CenterLoader text="Loading claims..." />}>
+        <ClaimsList />
+      </Suspense>
     );
   }
 
-  return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold">Reviewer Dashboard</h1>
+  if (tab === "settings") {
+    return (
+      <Suspense fallback={<CenterLoader text="Loading settings..." />}>
+        <Settings />
+      </Suspense>
+    );
+  }
 
-      {user && (
-        <div className="mt-4">
-          <p>Welcome back, {user.name}! lets review some claims</p>
-          <p>Email: {user.email}</p>
-          <p>Organization: {orgs?.find((org) => org.id === activeMember?.organizationId)?.name}</p>
-        </div>
-      )}
-    </main>
-  );
+  return <ReviewerDashboard />;
 }
+

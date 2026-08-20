@@ -13,14 +13,18 @@ interface User {
 
 interface UserStore {
   user: User | null;
+  role: string | null;
   isAuthenticated: boolean;
   setUser: (user: User) => void;
+  setRole: (role: string) => void;
   clearUser: () => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
+  role: null,
   isAuthenticated: false,
   setUser: (user) => set({ user, isAuthenticated: true }),
-  clearUser: () => set({ user: null, isAuthenticated: false }),
+  setRole: (role) => set({ role }),
+  clearUser: () => set({ user: null, role: null, isAuthenticated: false }),
 }));

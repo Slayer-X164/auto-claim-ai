@@ -1,65 +1,138 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
+import { useOrgStore } from "@/app/store/org-store";
+import { LuCar, LuShield, LuLayoutDashboard, LuFiles, LuUsers, LuSettings } from "react-icons/lu";
+import { TbWheel } from "react-icons/tb";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/app/lib/auth-client";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useUserStore } from "@/app/store/userStore";
 
 export default function Sidebar() {
+  const router = useRouter();
+  const activeOrg = useOrgStore((state) => state.activeOrg);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get("tab") || "dashboard";
+  const role = useUserStore((state) => state.role);
+
+  const { data: orgs } = authClient.useListOrganizations();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  const handleOrganizationChange = async (newOrgId: string) => {
+    if (!newOrgId) return;
+    setIsOpen(false);
+    await authClient.organization.setActive({ organizationId: newOrgId });
+    const res = await authClient.organization.getActiveMember();
+
+    if (res.data?.role === "reviewer") {
+      router.replace("/dashboard/reviewer");
+    } else {
+      router.replace("/dashboard/admin");
+    }
+  };
+
   return (
-    <div className="w-[260px] min-h-screen bg-[#000819] flex flex-col p-6 gap-8 shrink-0">
-      <div className="flex flex-col gap-5">
+    <div className="w-[260px] min-h-screen  flex flex-col pl-5 pt-8  gap-6 shrink-0">
+      <div className="flex flex-col gap-9">
         <div className="flex items-center gap-1">
-          <Image src="/images/Wheel.png" alt="AutoClaim AI Logo" width={31} height={31} />
-          <span className="text-white font-instrument font-bold text-[20px]">AutoClaim AI</span>
-        </div>
-
-        <div className="flex items-center gap-2.5 px-2.5 py-1.5 border border-white/20 rounded-lg">
-          <div className="w-5 h-5 bg-[#1F66FF] rounded-[5px] flex items-center justify-center">
-            <Image src="/icons/logo.svg" alt="Brand Icon" width={13} height={13} />
-          </div>
-          <span className="text-[#94A3B8] font-instrument font-medium text-[14px]">ABC Insurance</span>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-6 ">
-        <div className="flex flex-col gap-2">
-          <h3 className="text-[#94A3B8] font-instrument font-semibold text-[11px] uppercase tracking-[0.09em] px-3">
-            Overview
-          </h3>
-          <div className="flex flex-col gap-1">
-            <Link href="/dashboard/admin" className="flex items-center gap-3 px-3 py-2.5 bg-[#1E293B] rounded-lg">
-              <Image src="/icons/circle-x.svg" alt="Dashboard" width={18} height={18} />
-              <span className="text-white font-instrument font-semibold text-[14px] flex-1">Dashboard</span>
-              <div className="w-1 h-4 bg-[#1F66FF] rounded-sm"></div>
-            </Link>
-          </div>
+          <TbWheel size={28} />
+          <span className="text-black font-instrument font-medium text-[20px]">AutoClaim AI</span>
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="text-[#94A3B8] font-instrument font-semibold text-[11px] uppercase tracking-[0.09em] px-3">
-            Operations
-          </h3>
-          <div className="flex flex-col gap-1">
-            <Link href="#" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#1E293B]/50 transition-colors">
-              <Image src="/icons/files.svg" alt="Claims" width={18} height={18} />
-              <span className="text-[#94A3B8] font-instrument font-medium text-[14px]">Claims</span>
-            </Link>
-            <Link href="#" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#1E293B]/50 transition-colors">
-              <Image src="/icons/users.svg" alt="Reviewers" width={18} height={18} />
-              <span className="text-[#94A3B8] font-instrument font-medium text-[14px]">Reviewers</span>
-            </Link>
-          </div>
-        </div>
+          <h2 className="text-neutral-500 font-instrument font-semibold text-[12px]" >Workspace</h2>
+          <div className="relative" ref={dropdownRef}>
+            {orgs && orgs.length > 0 && (
+              <div
+                className="bg-white border border-neutral-300 px-3 py-1.5 rounded-md flex items-center justify-between gap-2 cursor-pointer  transition-colors"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                <div className="flex items-center gap-2">
+                  <Image src={activeOrg?.logo || "/images/placeholder.png"} alt="Organization Logo" width={24} height={24} />
+                  <span className="font-instrument font-bold text-[12px] tracking-[0.0417em] text-[#475569]">
+                    {activeOrg?.name?.toUpperCase() || "SELECT WORKSPACE"}
+                  </span>
+                </div>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-[#475569] transition-transform ${isOpen ? "rotate-180" : ""}`}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            )}
 
-        <div className="flex flex-col gap-2 mt-auto">
-          <h3 className="text-[#94A3B8] font-instrument font-semibold text-[11px] uppercase tracking-[0.09em] px-3">
-            Organization
-          </h3>
-          <div className="flex flex-col gap-1">
-            <Link href="#" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#1E293B]/50 transition-colors">
-              <Image src="/icons/settings.svg" alt="Settings" width={18} height={18} />
-              <span className="text-[#94A3B8] font-instrument font-medium text-[14px]">Settings</span>
-            </Link>
+            {isOpen && orgs && orgs.length > 0 && (
+              <div className="absolute top-full left-0 mt-2 w-full bg-white border border-[#E2E8F0] rounded-md shadow-xl shadow-neutral-900/14 z-50 overflow-hidden">
+                {orgs.map((org) => (
+                  <div
+                    key={org.id}
+                    className={`px-4 py-2 text-[13px] font-instrument cursor-pointer  transition-colors ${activeOrg?.id === org.id ? "bg-neutral-700 font-semibold text-neutral-50" : "text-[#475569] font-medium"}`}
+                    onClick={() => handleOrganizationChange(org.id)}
+                  >
+                    {org.name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <div className="flex flex-col gap-2">
+        <h2 className="text-neutral-500 font-instrument font-semibold text-[12px]" >Menu</h2>
+        <div className="flex flex-col gap-3 ">
+
+
+          <div className="flex flex-col gap-1">
+            <Link href={pathname} className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${currentTab === "dashboard" ? "bg-neutral-800 text-white" : "hover:bg-neutral-200"}`}
+            >
+              <LuLayoutDashboard size={18} className={currentTab === "dashboard" ? "text-white" : "text-neutral-500"} />
+              <span className={`font-instrument font-semibold text-[14px] flex-1 ${currentTab === "dashboard" ? "text-white" : "text-neutral-500"}`}>Dashboard</span>
+              {currentTab === "dashboard" && <div className="w-0.5 h-4 bg-white rounded-sm"></div>}
+            </Link>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Link href={`${pathname}?tab=claims`} className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${currentTab === "claims" ? "bg-neutral-800 text-white" : "hover:bg-neutral-200"}`}
+            >
+              <LuFiles size={18} className={currentTab === "claims" ? "text-white" : "text-neutral-500"} />
+              <span className={`font-instrument font-semibold text-[14px] flex-1 ${currentTab === "claims" ? "text-white" : "text-neutral-500"}`}>Claims</span>
+              {currentTab === "claims" && <div className="w-0.5 h-4 bg-white rounded-sm"></div>}
+            </Link>
+          </div>
+
+          {role == "admin" && <div className="flex flex-col gap-1">
+            <Link href="#" className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-neutral-200 transition-colors">
+              <LuUsers size={18} className="text-neutral-500" />
+              <span className="text-neutral-500 font-instrument font-medium text-[14px]">Reviewers</span>
+            </Link>
+          </div>}
+
+          <div className="flex flex-col gap-1">
+            <Link href={`${pathname}?tab=settings`} className={`flex items-center gap-3 px-3 py-2.5 rounded-md ${currentTab === "settings" ? "bg-neutral-800 text-white" : "hover:bg-neutral-200"}`}
+            >
+              <LuSettings size={18} className={currentTab === "settings" ? "text-white" : "text-neutral-500"} />
+              <span className={`font-instrument font-semibold text-[14px] flex-1 ${currentTab === "settings" ? "text-white" : "text-neutral-500"}`}>Settings</span>
+              {currentTab === "settings" && <div className="w-0.5 h-4 bg-white rounded-sm"></div>}
+            </Link>
+          </div>
+
+
+        </div>
+      </div>
+
+
     </div>
   );
 }
