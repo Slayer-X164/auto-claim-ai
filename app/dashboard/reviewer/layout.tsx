@@ -15,7 +15,9 @@ export default function AdminDashboardLayout({
       <div className="flex flex-col flex-1 overflow-hidden m-4 rounded-xl bg-white border-3 border-neutral-200/80">
         <Header />
         <div className="flex-1 overflow-y-auto">
-          {children}
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
         </div>
       </div>
     </div>
